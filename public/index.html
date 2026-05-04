@@ -7,30 +7,25 @@
   <title>MediMate</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
-   body { 
-  display: flex; 
-  height: 100vh; 
-  background-color: #faf9f7;
-  background-image: url('bg.png');
-  background-repeat: repeat;
-  background-size: 400px;
-  position: relative;
-}
-
-body::before {
-  content: '';
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(250, 249, 247, 0.75);
-  z-index: 0;
-  pointer-events: none;
-}
-
-.sidebar, .main {
-  position: relative;
-  z-index: 1;
-}
+    body { 
+      display: flex; 
+      min-height: 100vh; 
+      background-color: #faf9f7;
+      background-image: url('bg.png');
+      background-repeat: repeat;
+      background-size: 400px;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(250, 249, 247, 0.75);
+      z-index: 0;
+      pointer-events: none;
+    }
+    .sidebar, .main { position: relative; z-index: 1; }
 
     /* SIDEBAR */
     .sidebar { width: 200px; background: #ddeeff; padding: 24px 16px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; height: 100vh; position: sticky; top: 0; }
@@ -82,11 +77,11 @@ body::before {
     .risk-medium { background: #FAEEDA; color: #633806; }
     .risk-high { background: #FCEBEB; color: #791F1F; }
     .result-text { font-size: 13px; color: #555; line-height: 1.7; }
-.result-text h3 { font-size: 14px; font-weight: 600; color: #1a1a2e; margin: 12px 0 6px; }
-.result-text p { margin-bottom: 8px; }
-.result-text ul, .result-text ol { padding-left: 18px; margin-bottom: 8px; }
-.result-text li { margin-bottom: 4px; }
-.result-text strong { font-weight: 600; color: #1a1a2e; }
+    .result-text h3 { font-size: 14px; font-weight: 600; color: #1a1a2e; margin: 12px 0 6px; }
+    .result-text p { margin-bottom: 8px; }
+    .result-text ul, .result-text ol { padding-left: 18px; margin-bottom: 8px; }
+    .result-text li { margin-bottom: 4px; }
+    .result-text strong { font-weight: 600; color: #1a1a2e; }
     .disclaimer { font-size: 11px; color: #aaa; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid #eee; }
     .loading { font-size: 13px; color: #888; font-style: italic; }
 
@@ -111,10 +106,66 @@ body::before {
     .modal-close:hover { color: #1a1a2e; }
     .modal-title { font-size: 18px; font-weight: 600; color: #1a1a2e; margin-bottom: 12px; }
     .modal-body { font-size: 13px; color: #555; line-height: 1.8; white-space: pre-wrap; }
+
+    /* MOBILE NAV TOGGLE */
+    .mobile-header { display: none; background: #ddeeff; padding: 14px 16px; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+    .mobile-logo { color: #0C447C; font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .hamburger { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; gap: 5px; }
+    .hamburger span { width: 22px; height: 2px; background: #185FA5; border-radius: 2px; display: block; }
+    .mobile-nav { display: none; background: #ddeeff; padding: 12px 16px; flex-direction: column; gap: 6px; }
+    .mobile-nav.open { display: flex; }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar { display: none; }
+      .mobile-header { display: flex; }
+      .main { padding: 16px; gap: 14px; }
+      .greeting h1 { font-size: 18px; }
+      .disease-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+      .disease-card { padding: 10px; }
+      .disease-icon { width: 28px; height: 28px; font-size: 14px; margin-bottom: 6px; }
+      .disease-title { font-size: 11px; }
+      .disease-desc { font-size: 10px; }
+      .two-col { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      .disease-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+    }
   </style>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
+
+  <!-- MOBILE HEADER -->
+  <div class="mobile-header">
+    <div class="mobile-logo"><div class="logo-dot" style="width:10px;height:10px;border-radius:50%;background:#D4537E;"></div>MediMate</div>
+    <button class="hamburger" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- MOBILE NAV -->
+  <div class="mobile-nav" id="mobile-nav">
+    <div class="nav-item active" id="mob-diabetes" onclick="selectDisease('diabetes', this); toggleMobileNav()">
+      <div class="nav-icon" style="background:#ED93B1"></div>Diabetes
+    </div>
+    <div class="nav-item" id="mob-heart" onclick="selectDisease('heart', this); toggleMobileNav()">
+      <div class="nav-icon" style="background:#FAC775"></div>Heart Disease
+    </div>
+    <div class="nav-item" id="mob-lung" onclick="selectDisease('lung', this); toggleMobileNav()">
+      <div class="nav-icon" style="background:#9FE1CB"></div>Lung Cancer
+    </div>
+    <div class="nav-item" onclick="openModal('about'); toggleMobileNav()">
+      <div class="nav-icon" style="background:#AFA9EC"></div>About
+    </div>
+    <div class="nav-item" onclick="openModal('disclaimer'); toggleMobileNav()">
+      <div class="nav-icon" style="background:#B5D4F4"></div>Disclaimer
+    </div>
+  </div>
 
   <!-- SIDEBAR -->
   <div class="sidebar">
@@ -250,7 +301,7 @@ body::before {
     const modalContent = {
       about: {
         title: "About MediMate",
-        body: "MediMate is an AI-powered health risk prediction tool built for educational purposes. It uses advanced AI to analyze your health parameters and provide insights on potential health risks including Diabetes, Heart Disease, and Lung Cancer.\n\nBuilt with Node.js, Express, and OpenAI's GPT-4o. Designed to help students and individuals understand the basics of health risk assessment.\n\nThis app was created as an academic project and is not intended for medical diagnosis."
+        body: "MediMate is an AI-powered health risk prediction tool built for educational purposes. It uses advanced AI to analyze your health parameters and provide insights on potential health risks including Diabetes, Heart Disease, and Lung Cancer.\n\nBuilt with Node.js, Express, and Groq AI. Designed to help students and individuals understand the basics of health risk assessment.\n\nThis app was created as an academic project and is not intended for medical diagnosis."
       },
       disclaimer: {
         title: "Medical Disclaimer",
@@ -259,6 +310,10 @@ body::before {
     };
 
     let currentDisease = 'diabetes';
+
+    function toggleMobileNav() {
+      document.getElementById('mobile-nav').classList.toggle('open');
+    }
 
     function selectDisease(disease, navEl) {
       currentDisease = disease;
@@ -304,7 +359,7 @@ body::before {
       btn.textContent = 'Analyzing...';
       document.getElementById('result-area').innerHTML = '<p class="loading">Analyzing your data, please wait...</p>';
       try {
-       const res = await fetch('https://medimate-production-0354.up.railway.app/predict', {
+        const res = await fetch('https://medimate-production-0354.up.railway.app/predict', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ disease: currentDisease, inputs })
