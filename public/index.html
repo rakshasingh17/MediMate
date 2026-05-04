@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediMate</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+   body { 
+  display: flex; 
+  height: 100vh; 
+  background-color: #faf9f7;
+  background-image: url('bg.png');
+  background-repeat: repeat;
+  background-size: 400px;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(250, 249, 247, 0.75);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sidebar, .main {
+  position: relative;
+  z-index: 1;
+}
+
+    /* SIDEBAR */
+    .sidebar { width: 200px; background: #ddeeff; padding: 24px 16px; display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; height: 100vh; position: sticky; top: 0; }
+    .logo { color: #0C447C; font-size: 20px; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 8px; }
+    .logo-dot { width: 10px; height: 10px; border-radius: 50%; background: #D4537E; }
+    .nav-label { color: #6a9cc0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin: 16px 0 8px; padding: 0 8px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; color: #185FA5; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+    .nav-item:hover { background: rgba(24,95,165,0.1); }
+    .nav-item.active { background: #185FA5; color: #fff; }
+    .nav-icon { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
+
+    /* MAIN */
+    .main { flex: 1; padding: 28px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+    .greeting h1 { font-size: 22px; font-weight: 600; color: #1a1a2e; }
+    .greeting p { font-size: 13px; color: #888; margin-top: 4px; }
+
+    /* DISEASE CARDS */
+    .disease-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .disease-card { padding: 16px; border-radius: 14px; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+    .disease-card.pink { background: #FBEAF0; }
+    .disease-card.yellow { background: #FAEEDA; }
+    .disease-card.green { background: #EAF3DE; }
+    .disease-card.active.pink { border-color: #D4537E; }
+    .disease-card.active.yellow { border-color: #BA7517; }
+    .disease-card.active.green { border-color: #639922; }
+    .disease-icon { width: 36px; height: 36px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    .disease-card.pink .disease-icon { background: #F4C0D1; }
+    .disease-card.yellow .disease-icon { background: #FAC775; }
+    .disease-card.green .disease-icon { background: #C0DD97; }
+    .disease-title { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+    .disease-desc { font-size: 11px; color: #888; margin-top: 2px; }
+
+    /* FORM + RESULT */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-card, .result-card { background: #fff; border-radius: 14px; border: 0.5px solid #e0e0e0; padding: 20px; }
+    .form-card h3, .result-card h3 { font-size: 15px; font-weight: 600; color: #1a1a2e; margin-bottom: 14px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label { font-size: 11px; color: #888; }
+    .form-group input, .form-group select { padding: 8px 10px; border-radius: 8px; border: 0.5px solid #ccc; background: #faf9f7; font-size: 12px; color: #1a1a2e; outline: none; }
+    .form-group input:focus, .form-group select:focus { border-color: #378ADD; }
+    .predict-btn { width: 100%; padding: 11px; border-radius: 10px; background: #185FA5; color: #fff; font-size: 14px; font-weight: 600; border: none; cursor: pointer; margin-top: 12px; transition: background 0.2s; }
+    .predict-btn:hover { background: #0C447C; }
+    .predict-btn:disabled { background: #aaa; cursor: not-allowed; }
+
+    /* RESULT */
+    .risk-badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-bottom: 10px; }
+    .risk-low { background: #EAF3DE; color: #27500A; }
+    .risk-medium { background: #FAEEDA; color: #633806; }
+    .risk-high { background: #FCEBEB; color: #791F1F; }
+    .result-text { font-size: 13px; color: #555; line-height: 1.7; }
+.result-text h3 { font-size: 14px; font-weight: 600; color: #1a1a2e; margin: 12px 0 6px; }
+.result-text p { margin-bottom: 8px; }
+.result-text ul, .result-text ol { padding-left: 18px; margin-bottom: 8px; }
+.result-text li { margin-bottom: 4px; }
+.result-text strong { font-weight: 600; color: #1a1a2e; }
+    .disclaimer { font-size: 11px; color: #aaa; margin-top: 10px; padding-top: 10px; border-top: 0.5px solid #eee; }
+    .loading { font-size: 13px; color: #888; font-style: italic; }
+
+    /* SUGGESTIONS + EMERGENCY */
+    .suggestions-card { background: #FCEBEB; border-radius: 14px; border: 0.5px solid #F09595; padding: 18px; }
+    .suggestions-card h3 { font-size: 14px; font-weight: 600; color: #791F1F; margin-bottom: 12px; }
+    .suggestion-item { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px; }
+    .suggestion-dot { width: 6px; height: 6px; border-radius: 50%; background: #E24B4A; margin-top: 5px; flex-shrink: 0; }
+    .suggestion-text { font-size: 12px; color: #A32D2D; line-height: 1.6; }
+    .emergency-card { background: #fff; border-radius: 14px; border: 0.5px solid #F09595; padding: 18px; }
+    .emergency-card h3 { font-size: 14px; font-weight: 600; color: #791F1F; margin-bottom: 12px; }
+    .emergency-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 0.5px solid #F7C1C1; }
+    .emergency-row:last-child { border-bottom: none; }
+    .emergency-label { font-size: 12px; color: #A32D2D; }
+    .emergency-number { font-size: 13px; font-weight: 600; color: #E24B4A; }
+
+    /* MODAL */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 999; align-items: center; justify-content: center; }
+    .modal-overlay.open { display: flex; }
+    .modal-box { background: #fff; border-radius: 16px; padding: 32px; max-width: 460px; width: 90%; position: relative; }
+    .modal-close { position: absolute; top: 16px; right: 16px; background: none; border: none; font-size: 18px; cursor: pointer; color: #888; }
+    .modal-close:hover { color: #1a1a2e; }
+    .modal-title { font-size: 18px; font-weight: 600; color: #1a1a2e; margin-bottom: 12px; }
+    .modal-body { font-size: 13px; color: #555; line-height: 1.8; white-space: pre-wrap; }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo"><div class="logo-dot"></div>MediMate</div>
+    <span class="nav-label">Predict</span>
+    <div class="nav-item active" onclick="selectDisease('diabetes', this)">
+      <div class="nav-icon" style="background:#ED93B1"></div>Diabetes
+    </div>
+    <div class="nav-item" onclick="selectDisease('heart', this)">
+      <div class="nav-icon" style="background:#FAC775"></div>Heart Disease
+    </div>
+    <div class="nav-item" onclick="selectDisease('lung', this)">
+      <div class="nav-icon" style="background:#9FE1CB"></div>Lung Cancer
+    </div>
+    <span class="nav-label">Info</span>
+    <div class="nav-item" onclick="openModal('about')">
+      <div class="nav-icon" style="background:#AFA9EC"></div>About
+    </div>
+    <div class="nav-item" onclick="openModal('disclaimer')">
+      <div class="nav-icon" style="background:#B5D4F4"></div>Disclaimer
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="greeting">
+      <h1>Hello, welcome to MediMate 👋</h1>
+      <p>Select a condition and enter your health parameters for an AI-powered risk assessment.</p>
+    </div>
+
+    <!-- DISEASE SELECTOR -->
+    <div class="disease-grid">
+      <div class="disease-card pink active" id="card-diabetes" onclick="selectDisease('diabetes', null)">
+        <div class="disease-icon">🩸</div>
+        <div class="disease-title">Diabetes</div>
+        <div class="disease-desc">Blood sugar analysis</div>
+      </div>
+      <div class="disease-card yellow" id="card-heart" onclick="selectDisease('heart', null)">
+        <div class="disease-icon">❤️</div>
+        <div class="disease-title">Heart Disease</div>
+        <div class="disease-desc">Cardiac risk check</div>
+      </div>
+      <div class="disease-card green" id="card-lung" onclick="selectDisease('lung', null)">
+        <div class="disease-icon">🫁</div>
+        <div class="disease-title">Lung Cancer</div>
+        <div class="disease-desc">Respiratory screening</div>
+      </div>
+    </div>
+
+    <!-- FORM + RESULT -->
+    <div class="two-col">
+      <div class="form-card">
+        <h3 id="form-title">Diabetes — health parameters</h3>
+        <div class="form-grid" id="form-fields"></div>
+        <button class="predict-btn" onclick="analyzeRisk()">Analyze my risk</button>
+      </div>
+      <div class="result-card">
+        <h3>Risk assessment</h3>
+        <div id="result-area">
+          <p class="loading">Your results will appear here after analysis.</p>
+        </div>
+        <div class="disclaimer">For educational purposes only. Always consult a qualified medical professional.</div>
+      </div>
+    </div>
+
+    <!-- SUGGESTIONS + EMERGENCY -->
+    <div class="two-col">
+      <div class="suggestions-card">
+        <h3>If your risk is high — what to do</h3>
+        <div class="suggestion-item"><div class="suggestion-dot"></div><div class="suggestion-text">Visit a doctor or specialist immediately for a proper diagnosis</div></div>
+        <div class="suggestion-item"><div class="suggestion-dot"></div><div class="suggestion-text">Avoid self-medicating — get a professional prescription</div></div>
+        <div class="suggestion-item"><div class="suggestion-dot"></div><div class="suggestion-text">Monitor your vitals daily (blood pressure, glucose, weight)</div></div>
+        <div class="suggestion-item"><div class="suggestion-dot"></div><div class="suggestion-text">Reduce sugar, salt, and processed food intake immediately</div></div>
+        <div class="suggestion-item"><div class="suggestion-dot"></div><div class="suggestion-text">Stay hydrated and get at least 7–8 hours of sleep</div></div>
+      </div>
+      <div class="emergency-card">
+        <h3>Emergency contacts</h3>
+        <div class="emergency-row"><span class="emergency-label">Ambulance (India)</span><span class="emergency-number">102</span></div>
+        <div class="emergency-row"><span class="emergency-label">Emergency helpline</span><span class="emergency-number">112</span></div>
+        <div class="emergency-row"><span class="emergency-label">Health helpline</span><span class="emergency-number">104</span></div>
+        <div class="emergency-row"><span class="emergency-label">NIMHANS helpline</span><span class="emergency-number">080-46110007</span></div>
+        <div class="emergency-row"><span class="emergency-label">Poison control</span><span class="emergency-number">1800-116-117</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+    const diseases = {
+      diabetes: {
+        title: "Diabetes — health parameters",
+        fields: [
+          { id: "age", label: "Age", placeholder: "e.g. 35" },
+          { id: "bmi", label: "BMI", placeholder: "e.g. 24.5" },
+          { id: "glucose", label: "Blood glucose (mg/dL)", placeholder: "e.g. 120" },
+          { id: "bp", label: "Blood pressure (mmHg)", placeholder: "e.g. 120/80" },
+          { id: "insulin", label: "Insulin level", placeholder: "e.g. 80" },
+          { id: "pregnancies", label: "Pregnancies (if any)", placeholder: "e.g. 0" }
+        ]
+      },
+      heart: {
+        title: "Heart Disease — health parameters",
+        fields: [
+          { id: "age", label: "Age", placeholder: "e.g. 50" },
+          { id: "bp", label: "Blood pressure (mmHg)", placeholder: "e.g. 130/85" },
+          { id: "cholesterol", label: "Cholesterol (mg/dL)", placeholder: "e.g. 200" },
+          { id: "heartrate", label: "Max heart rate", placeholder: "e.g. 150" },
+          { id: "chest_pain", label: "Chest pain? (yes/no)", placeholder: "yes or no" },
+          { id: "smoking", label: "Smoker? (yes/no)", placeholder: "yes or no" }
+        ]
+      },
+      lung: {
+        title: "Lung Cancer — health parameters",
+        fields: [
+          { id: "age", label: "Age", placeholder: "e.g. 55" },
+          { id: "smoking", label: "Smoker? (yes/no)", placeholder: "yes or no" },
+          { id: "years_smoking", label: "Years of smoking", placeholder: "e.g. 10" },
+          { id: "cough", label: "Chronic cough? (yes/no)", placeholder: "yes or no" },
+          { id: "shortness", label: "Shortness of breath? (yes/no)", placeholder: "yes or no" },
+          { id: "family_history", label: "Family history? (yes/no)", placeholder: "yes or no" }
+        ]
+      }
+    };
+
+    const modalContent = {
+      about: {
+        title: "About MediMate",
+        body: "MediMate is an AI-powered health risk prediction tool built for educational purposes. It uses advanced AI to analyze your health parameters and provide insights on potential health risks including Diabetes, Heart Disease, and Lung Cancer.\n\nBuilt with Node.js, Express, and OpenAI's GPT-4o. Designed to help students and individuals understand the basics of health risk assessment.\n\nThis app was created as an academic project and is not intended for medical diagnosis."
+      },
+      disclaimer: {
+        title: "Medical Disclaimer",
+        body: "⚠️ Important: MediMate is strictly for educational and informational purposes only.\n\nThe risk assessments provided by this app are generated by an AI model and should NOT be used as a substitute for professional medical advice, diagnosis, or treatment.\n\nAlways seek the advice of a qualified healthcare provider with any questions you may have regarding a medical condition. Never disregard professional medical advice or delay seeking it because of something you read on this app.\n\nIn case of a medical emergency, call 112 immediately."
+      }
+    };
+
+    let currentDisease = 'diabetes';
+
+    function selectDisease(disease, navEl) {
+      currentDisease = disease;
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      if (navEl) navEl.classList.add('active');
+      document.querySelectorAll('.disease-card').forEach(c => c.classList.remove('active'));
+      document.getElementById('card-' + disease).classList.add('active');
+      const data = diseases[disease];
+      document.getElementById('form-title').textContent = data.title;
+      const grid = document.getElementById('form-fields');
+      grid.innerHTML = data.fields.map(f => `
+        <div class="form-group">
+          <label>${f.label}</label>
+          <input type="text" id="field-${f.id}" placeholder="${f.placeholder}">
+        </div>
+      `).join('');
+      document.getElementById('result-area').innerHTML = '<p class="loading">Your results will appear here after analysis.</p>';
+    }
+
+    function openModal(type) {
+      document.getElementById('modal-title').textContent = modalContent[type].title;
+      document.getElementById('modal-body').textContent = modalContent[type].body;
+      document.getElementById('modal-overlay').classList.add('open');
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('open');
+    }
+
+    async function analyzeRisk() {
+      const fields = diseases[currentDisease].fields;
+      const inputs = {};
+      for (const f of fields) {
+        const val = document.getElementById('field-' + f.id)?.value;
+        if (val) inputs[f.label] = val;
+      }
+      if (Object.keys(inputs).length === 0) {
+        alert('Please fill in at least some fields before analyzing.');
+        return;
+      }
+      const btn = document.querySelector('.predict-btn');
+      btn.disabled = true;
+      btn.textContent = 'Analyzing...';
+      document.getElementById('result-area').innerHTML = '<p class="loading">Analyzing your data, please wait...</p>';
+      try {
+        const res = await fetch('http://localhost:3000/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ disease: currentDisease, inputs })
+        });
+        const data = await res.json();
+        const reply = data.reply || 'No response received.';
+        const riskLevel = reply.toLowerCase().includes('high') ? 'high' : reply.toLowerCase().includes('medium') || reply.toLowerCase().includes('moderate') ? 'medium' : 'low';
+        const badgeClass = riskLevel === 'high' ? 'risk-high' : riskLevel === 'medium' ? 'risk-medium' : 'risk-low';
+        const badgeText = riskLevel === 'high' ? 'High risk' : riskLevel === 'medium' ? 'Medium risk' : 'Low risk';
+        document.getElementById('result-area').innerHTML = `
+          <span class="risk-badge ${badgeClass}">${badgeText}</span>
+          <div class="result-text">${marked.parse(reply)}</div>
+        `;
+      } catch (err) {
+        document.getElementById('result-area').innerHTML = '<p class="loading">Something went wrong. Make sure your server is running!</p>';
+      }
+      btn.disabled = false;
+      btn.textContent = 'Analyze my risk';
+    }
+
+    selectDisease('diabetes', null);
+  </script>
+</body>
+</html>
