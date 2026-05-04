@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -9,7 +10,7 @@ app.use(bodyParser.json());
 app.use(express.static("public"));
 
 const openai = new OpenAI({
-  apiKey: "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"
+  apiKey: process.env.OPENAI_API_KEY
 });
 
 app.post("/predict", async (req, res) => {
