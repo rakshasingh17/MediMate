@@ -304,7 +304,7 @@ body::before {
       btn.textContent = 'Analyzing...';
       document.getElementById('result-area').innerHTML = '<p class="loading">Analyzing your data, please wait...</p>';
       try {
-       const res = await fetch('https://medimate-production-c49f.up.railway.app/predict', {
+       const res = await fetch('https://medimate-production-0354.up.railway.app/predict', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ disease: currentDisease, inputs })
