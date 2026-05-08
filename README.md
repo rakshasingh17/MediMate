@@ -52,11 +52,6 @@ Built with **HTML, CSS, JavaScript, Node.js, Express, and Groq AI**, the platfor
 5. AI generates a structured risk assessment
 6. Results are displayed instantly on screen
 
----
-
-## 🚀 Live Demo
-
-[MediMate Live Application](https://medimate-production-0354.up.railway.app)
 
 ---
 
